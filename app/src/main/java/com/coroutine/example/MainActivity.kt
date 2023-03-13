@@ -4,10 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
     lateinit var tvHello: TextView
@@ -33,12 +30,42 @@ class MainActivity : AppCompatActivity() {
 //        }
 
         CoroutineScope(Dispatchers.IO).launch {
-            task1()
+//            task1()
+            printFollowersLaunch()
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            task2()
+//            task1()
+            printFollowersAsync()
         }
+
+//        CoroutineScope(Dispatchers.IO).launch {
+//            task2()
+//        }
+
+
+    }
+
+    private suspend fun printFollowersLaunch() {
+        var fbFollowers = 0
+        val job = CoroutineScope(Dispatchers.IO).launch {
+            fbFollowers = getFbFollowers()
+        }
+
+        job.join()
+        Log.d("SANYAM", fbFollowers.toString())
+    }
+
+    private suspend fun printFollowersAsync() {
+        val job = CoroutineScope(Dispatchers.IO).async {
+            getFbFollowers()
+        }
+        Log.d("SANYAM", job.await().toString())
+    }
+
+    private suspend fun getFbFollowers(): Int {
+        delay(1000)
+        return 54
     }
 
     suspend fun task1() {

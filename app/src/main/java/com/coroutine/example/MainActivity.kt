@@ -15,68 +15,53 @@ class MainActivity : AppCompatActivity() {
 
         tvHello = findViewById(R.id.tvHello)
 
-//        tvHello.setOnClickListener {
-//            CoroutineScope(Dispatchers.IO).launch {
-//                Log.d("SANYAM : ", "1 - ${Thread.currentThread().name}")
+        GlobalScope.launch(Dispatchers.Main) {
+            execute()
+        }
+    }
+
+    private suspend fun execute() {
+//        val parentJob = GlobalScope.launch(Dispatchers.Main) {
+//            Log.d("SANYAM", "Parent Job Started")
+//
+//            val childJob = launch {
+//                Log.d("SANYAM", "Child Job Started")
+//                delay(5000)
+//                Log.d("SANYAM", "Child Job Ended")
 //            }
 //
-//            GlobalScope.launch(Dispatchers.Main) {
-//                Log.d("SANYAM : ", "2 - ${Thread.currentThread().name}")
-//            }
+//            delay(3000)
+//            childJob.cancel()
+//            Log.d("SANYAM", "Parent Job Ended")
+//        }
 //
-//            MainScope().launch(Dispatchers.Default) {
-//                Log.d("SANYAM : ", "3 - ${Thread.currentThread().name}")
-//            }
-//        }
+////        delay(1000)
+////        parentJob.cancel()
+//        parentJob.join()
+//        Log.d("SANYAM", "Parent Job Completed")
 
-        CoroutineScope(Dispatchers.IO).launch {
-//            task1()
-            printFollowersLaunch()
+        val parentJob = CoroutineScope(Dispatchers.IO).launch {
+            for (i in 1..1000) {
+                if (isActive) {
+                    executeLongRunningTask()
+                    Log.d("SANYAM", i.toString())
+                }
+            }
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
-//            task1()
-            printFollowersAsync()
+        delay(100)
+        Log.d("SANYAM", "Cancelling Job")
+        parentJob.cancel()
+        parentJob.join()
+        Log.d("SANYAM", "Job completed")
+
+
+    }
+
+    private fun executeLongRunningTask() {
+        for (i in 0..100000000) {
+
         }
-
-//        CoroutineScope(Dispatchers.IO).launch {
-//            task2()
-//        }
-
-
     }
 
-    private suspend fun printFollowersLaunch() {
-        var fbFollowers = 0
-        val job = CoroutineScope(Dispatchers.IO).launch {
-            fbFollowers = getFbFollowers()
-        }
-
-        job.join()
-        Log.d("SANYAM", fbFollowers.toString())
-    }
-
-    private suspend fun printFollowersAsync() {
-        val job = CoroutineScope(Dispatchers.IO).async {
-            getFbFollowers()
-        }
-        Log.d("SANYAM", job.await().toString())
-    }
-
-    private suspend fun getFbFollowers(): Int {
-        delay(1000)
-        return 54
-    }
-
-    suspend fun task1() {
-        Log.d("SANYAM", "Starting task 1")
-        delay(1000)
-        Log.d("SANYAM", "Ending task 1")
-    }
-
-    suspend fun task2() {
-        Log.d("SANYAM", "Starting task 2")
-        delay(1000)
-        Log.d("SANYAM", "Ending task 2")
-    }
 }

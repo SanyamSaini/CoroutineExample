@@ -4,14 +4,19 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
     lateinit var tvHello: TextView
 
+    lateinit var mainViewModel: MainViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         tvHello = findViewById(R.id.tvHello)
 
@@ -21,47 +26,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun execute() {
-//        val parentJob = GlobalScope.launch(Dispatchers.Main) {
-//            Log.d("SANYAM", "Parent Job Started")
-//
-//            val childJob = launch {
-//                Log.d("SANYAM", "Child Job Started")
-//                delay(5000)
-//                Log.d("SANYAM", "Child Job Ended")
-//            }
-//
-//            delay(3000)
-//            childJob.cancel()
-//            Log.d("SANYAM", "Parent Job Ended")
-//        }
-//
-////        delay(1000)
-////        parentJob.cancel()
-//        parentJob.join()
-//        Log.d("SANYAM", "Parent Job Completed")
-
-        val parentJob = CoroutineScope(Dispatchers.IO).launch {
-            for (i in 1..1000) {
-                if (isActive) {
-                    executeLongRunningTask()
-                    Log.d("SANYAM", i.toString())
-                }
-            }
+        Log.d("SANYAM", "Before")
+        withContext(Dispatchers.IO) {
+            delay(1000)
+            Log.d("SANYAM", "Inside")
         }
 
-        delay(100)
-        Log.d("SANYAM", "Cancelling Job")
-        parentJob.cancel()
-        parentJob.join()
-        Log.d("SANYAM", "Job completed")
-
-
-    }
-
-    private fun executeLongRunningTask() {
-        for (i in 0..100000000) {
-
-        }
+        Log.d("SANYAM", "After")
     }
 
 }
